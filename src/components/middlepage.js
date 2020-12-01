@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { setTokenHeader } from '../redux/actions';
 export function MiddlePage(){
@@ -7,15 +7,19 @@ export function MiddlePage(){
         setTokenHeader(localStorage.getItem('jwt'));
     }
     const d = useParams();
-    const [sel,setsel] = useState(3);
+    const [sel,setsel] = useState(4);
     const ups=()=>{
         switch(sel){
             case 1:
-                return(<Wel/>);
+                return(<Wel test_name={d.id}/>);
             case 2:
                 return(<Al/>);
             case 3:
                 return(<Na/>);
+            case 4:
+                return(<Loader/>);
+            case 5:
+                return(<End/>);
             default:
                 return(<Na/>);
         }
@@ -31,9 +35,12 @@ export function MiddlePage(){
                 if(data.error == '3'){
                     setsel(3);
                 }
-            }
-            else{
-                setsel(1);
+                if(data.error == '5'){
+                    setsel(5);
+                }
+                if(data.error == '1'){
+                    setsel(1);
+                }
             }
         }
         sd();
@@ -48,12 +55,9 @@ export function MiddlePage(){
         </div>
     );
 };
-const start=async()=>{
-
-};
-export function Al(){
+ function Al(){
     return(
-        <div>
+        <div>  
             You already gave this test
         </div>
     );
@@ -65,16 +69,31 @@ function Na(){
         </div>
     );
 }
-function Wel(){
+function Wel(props){
+    const history = useHistory();
+    const start=()=>{
+            history.push(`/test/${props.test_name}`);
+    }
     return(
         <React.Fragment>
             <div className='text-center'>
                 welcome
             </div>
             <div>test duration  is 2 hours</div>
-            <span>don't change tabs</span><br/><hr/>
+            <span>don't change tabs</span><br/>
+            <hr/>
             <button className='btn btn-outline-primary' onClick={()=>start()}>Start</button>
         </React.Fragment>
+    );
+}
+function Loader(){
+    return(
+        <div>Loading...</div>
+    );
+}
+function End(){
+    return(
+        <div>test ended</div>
     );
 }
 /**{sel>=2 ? (sel==2 ? (<Al/>):(<Na/>) ):(<Wel/>)} */

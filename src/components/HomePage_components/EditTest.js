@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetch } from '../../redux/actions';
+import { useSelector } from 'react-redux';
 import { Header1 } from '../mainPage';
 export function EditTest(){
     const [file,Setfile] = useState(null);
@@ -17,8 +16,7 @@ export function EditTest(){
     const [testett, setTestett] = useState('');
     const [teststt, setTeststt] = useState('');
     const [message , setmessage] = useState('');
-    var ev = 'Open';
-    const dispatch = useDispatch(); 
+    var ev = 'Open'; 
     const {test_id } = useSelector(state=>state.reducer_my_tests);
     useEffect(()=>{
         const fe=async()=>{
@@ -108,7 +106,10 @@ export function EditTest(){
         }
         const {data} = await axios.post('/test/editdata',body);
         if(data.error != null){
-            SetError(data.error);
+            var dd = data.error;
+            const dd1 = dd.toString();
+            console.log(dd1);
+            SetError(dd1);
             //console.log(data.error);
         }
         if(data.success != null){

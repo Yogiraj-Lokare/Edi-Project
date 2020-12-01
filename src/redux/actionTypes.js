@@ -7,3 +7,4 @@ export const ADD_USER = 'ADD_USER';
 export const LOG_OUT = 'LOG_OUT';
 export const FETCH_MY_TESTS = 'FETCH_MY_TESTS';
 export const SAVE_TEST_ID = 'SAVE_TEST_ID';
+export const ALLOW = 'ALLOW';

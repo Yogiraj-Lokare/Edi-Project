@@ -1,6 +1,7 @@
-import React, { Component, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import { connect } from 'react-redux';
 import { decrementRemain,incrementRemain } from '../redux/actions';
+import { Button } from '@material-ui/core';
 
 function Question(props){
     const submitHander2=()=>{
@@ -51,7 +52,10 @@ function Question(props){
                 ff[3].checked=false;
             }
         },[props.select]);
-         
+        const classstyle={
+            marginTop:'1vw',
+            outline:'none',
+        } 
         return(
             <React.Fragment>
                 <div className='ques'>
@@ -65,21 +69,21 @@ function Question(props){
                     <div className='bnm'>
                         <form action='#'>
                             <div className='mcq'>
-                            <input className='radio' type='radio' value='1' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcq[0]}</div>
+                            <input className='radio' type='radio' value='1' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcqs[0]}</div>
                             </div>
                             <div className='mcq'>
-                            <input className='radio' type='radio' value='2' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcq[1]}</div>
+                            <input className='radio' type='radio' value='2' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcqs[1]}</div>
                             </div>
                             <div className='mcq'>
-                            <input className='radio' type='radio' value='3' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcq[2]}</div>
+                            <input className='radio' type='radio' value='3' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcqs[2]}</div>
                             </div>
                             <div className='mcq'>
-                            <input className='radio' type='radio' value='4' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcq[3]}</div>
+                            <input className='radio' type='radio' value='4' name={que[0]._id} id='11'  /><div className='namein'>{que[0].mcqs[3]}</div>
                             </div>      
                         </form>
                     </div>
-                    <button onClick={()=>submitHander()} className=' subtn sumo'>submit</button>
-                    <button onClick={()=>submitHander2()} className='subtn clero'>Clear Response</button>
+                    <Button onClick={()=>submitHander()} variant='contained' className='circut' style={classstyle} >submit</Button>
+                    <Button onClick={()=>submitHander2()} variant='contained' className='circut1' style={{marginTop:'1vw',outline:'none',marginLeft:'1vw'}}  >Clear Response</Button>
                 </div>
 
             </React.Fragment>

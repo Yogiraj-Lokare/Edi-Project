@@ -1,5 +1,5 @@
 import axios from "axios";
-import { DATA_REQUEST, DATA_SUCCESS, DECREMENT_REMAIN, INCREMENT_REMAIN, UPDATE_TIME, ADD_USER, LOG_OUT, FETCH_MY_TESTS, SAVE_TEST_ID } from "./actionTypes";
+import { DATA_REQUEST, DATA_SUCCESS, DECREMENT_REMAIN, INCREMENT_REMAIN, UPDATE_TIME, ADD_USER, LOG_OUT, FETCH_MY_TESTS, SAVE_TEST_ID, ALLOW } from "./actionTypes";
 
 export const decrementRemain = ()=>{
     return{
@@ -11,10 +11,17 @@ export const incrementRemain = ()=>{
         type:INCREMENT_REMAIN
     }
 }
-export const loadData =()=> async(dispatch) =>{
-    dispatch({type:DATA_REQUEST})
-    const {data} = await axios.get('/test/dataaccess');
-    dispatch({type:DATA_SUCCESS,data});
+export const loadData =(name)=> async(dispatch) =>{
+    dispatch({type:DATA_REQUEST});
+    const {data} = await axios.get(`/test/dataaccess/${name}`);
+    if(data.code == null){
+        dispatch({type:DATA_SUCCESS,data});
+    }
+    else{
+        dispatch({
+            type:ALLOW,
+        })
+    }
 }
 export const updateTime=(update,types)=>{
     return{
@@ -69,7 +76,7 @@ export const logout=(body)=>async(dispatch)=>{
 }
 export const fetch=()=>async(dispatch)=>{
     const {data} = await axios.get('/test/mytests');
-            console.log(data);
+            //console.log(data);
             var names=[];
             for(var i=0;i<data.data.length;i++){
                 var cc = new Date();

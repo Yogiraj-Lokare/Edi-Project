@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form } from 'react-bootstrap';
-import Axios from 'axios';
-import { connect, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { signin } from '../../redux/actions';
 import { useHistory } from 'react-router-dom';
 export function RegisterForm(){

@@ -1,21 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useHistory, Route, BrowserRouter, Router, NavLink, HashRouter, Switch } from 'react-router-dom';
+import React, { useState} from 'react';
+import {  useHistory, NavLink } from 'react-router-dom';
 import "../styles.css";
-import Axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Navbar, Nav, Fade } from 'react-bootstrap';
+import { Navbar} from 'react-bootstrap';
 import { LoginForm } from './loginForm';
 import { RegisterForm } from './registerForm';
-import { connect, useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import {  MyTest } from './myTest';
-import { givenTest, GivenTest } from './givenTest';
-import { mainPart, MainPart } from './mainPart';
-import { CreateTest } from './creteTest';
 import { logout ,setTokenHeader} from '../../redux/actions';
-import { EditTest } from './EditTest';
 
 export default function HomePage(){
     const name = localStorage.getItem('username');
@@ -27,8 +20,8 @@ export default function HomePage(){
         setTokenHeader(localStorage.getItem('jwt'));
     }
     const dispatch = useDispatch();
-    const [value,setvalue] = useState('');
-    const [message,setmessage] = useState('');
+    /*const [value,setvalue] = useState('');
+    const [message,setmessage] = useState('');*/
     const [show ,setShow] = useState(false);
     const handleClose = () => setShow(false);
     const [option, setOption] = useState(1);
@@ -39,15 +32,6 @@ export default function HomePage(){
     const loggout=()=>{
         dispatch(logout());
         history.push('/');
-    }
-    const submitHandler=async()=>{
-        var data = await Axios.post('/test',{value});
-        if(data.data.error == null){
-            history.push('/sample');
-        }
-        else{
-            setmessage('incorrect name');
-        }
     }
     return(
         <div className='maiin'>

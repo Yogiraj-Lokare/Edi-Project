@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useHistory, Route, BrowserRouter, Router, NavLink, HashRouter, Switch } from 'react-router-dom';
-import Axios from 'axios';
+import React, { useState } from 'react';
+import {  useHistory,NavLink} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Navbar, Nav, Fade } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 import { LoginForm } from './HomePage_components/loginForm';
 import { RegisterForm } from './HomePage_components/registerForm';
-import { connect, useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { logout ,setTokenHeader} from '../redux/actions';
-
 export function Header1(){
     const name = localStorage.getItem('username');
     var loggedIn = false;
@@ -21,8 +18,8 @@ export function Header1(){
         setTokenHeader(localStorage.getItem('jwt'));
     }
     const dispatch = useDispatch();
-    const [value,setvalue] = useState('');
-    const [message,setmessage] = useState('');
+    /*const [value,setvalue] = useState('');
+    const [message,setmessage] = useState('');*/
     const [show ,setShow] = useState(false);
     const handleClose = () => setShow(false);
     const [option, setOption] = useState(1);
@@ -33,15 +30,6 @@ export function Header1(){
     const loggout=()=>{
         dispatch(logout());
         history.push('/');
-    }
-    const submitHandler=async()=>{
-        var data = await Axios.post('/test',{value});
-        if(data.data.error == null){
-            history.push('/sample');
-        }
-        else{
-            setmessage('incorrect name');
-        }
     }
     return(
         <div className='maiin'>
@@ -56,16 +44,20 @@ export function Header1(){
                 <div className='collapse navbar-collapse ml-md-3' id='navbarSupportedContent'>
                 <ul className='navbar-nav mr-auto'>
                 <li className='nav-item '>
-                <NavLink  to='/testcode' className='nav-link ' >Search</NavLink>
+                <NavLink  to='/testcode' className='nav-link ' >Search
+                </NavLink>
                 </li>
                 <li className='nav-item'>
-                <NavLink  to='/giventests' className='nav-link' >Given-tests</NavLink>
+                <NavLink  to='/giventests' className='nav-link' >Given-test
+                </NavLink>
                 </li>
                 <li className='nav-item'>
-                <NavLink  to='/mytests' className='nav-link' >Conducted-tests</NavLink>
+                <NavLink  to='/mytests' className='nav-link' >Counducted-test
+                </NavLink>
                 </li>
                 <li className='nav-item'>
-                <NavLink  to='/create' className='nav-link' >Create-Test</NavLink>
+                <NavLink  to='/create' className='nav-link' >Create-test
+                </NavLink>
                 </li>
                 </ul>
                 <button  onClick={()=>loggout()} className=' btn btn-outline-danger my-2 my-sm-0'>

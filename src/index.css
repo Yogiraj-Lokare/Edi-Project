@@ -30,11 +30,6 @@ body {
   margin-top: .8vw;
   font-size: 1.5vw;
 }
-svg{
-  position: fixed;
-  top: 0;
-  right: 242px;
-}
 circle {
   transition: stroke-dashoffset 0.35s;
   transform: rotate(-90deg);
@@ -139,22 +134,6 @@ circle {
 .radio{
   align-self: flex-start;
 }
-.subtn{
-  margin-top: 1vw;
-  padding: .5vw;
-  font-size: 1.2vw;
-  color: white;
-  cursor: pointer;
-}
-.sumo{
-  background-color: rgb(39, 125, 238);
-  border: none;
-}
-.clero{
-  background-color: rgb(117, 117, 117);
-  margin-left: 1vw;
-  border: none;
-}
 .radio {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -175,4 +154,19 @@ circle {
 .radio:checked {
   border: 4px solid rgb(44, 115, 223);
 }
-
+.circut{
+  background: linear-gradient( to right,rgb(22, 161, 241),rgb(19, 53, 206)) !important;
+  color: white !important;
+}
+.circut1{
+  background: linear-gradient( to right,rgb(95, 99, 102),rgb(160, 161, 168)) !important;
+  color: white !important;
+}
+.hide-results{
+  display: none;
+  transition: ease-in-out 1s ;
+}
+.show-results{
+  display: block;
+  transition: ease-in-out 1s ;
+}

@@ -1,26 +1,36 @@
-import { DATA_REQUEST, DATA_SUCCESS, DECREMENT_REMAIN, INCREMENT_REMAIN, UPDATE_HOUR, UPDATE_TIME, ADD_USER, LOG_OUT } from "./actionTypes";
+import { DATA_REQUEST, DATA_SUCCESS, DECREMENT_REMAIN, INCREMENT_REMAIN,  ADD_USER, LOG_OUT, ALLOW } from "./actionTypes";
 const initialState={
     list:[{
         _id:1,
-        number: 1 ,
+        number: 1,
         question:'there is some problem',
-        mcq:[
+        mcqs:[
             'option1','option2','option3','option4'
         ],
+        marks:0
     }],
     user_time:{
         hour:0,
         min:0,
         second:0
     },
+    start_time:1,
+    end_time:1,
     answers:[0],
     remain:0,
-    loggedIn:false,
+    LegalAccess:false,
     username:'',
     user_id:1
 };
 const reducer_main_test = (state=initialState,action)=>{
     switch(action.type){
+        case ALLOW:
+            console.log('reached here');
+            return{
+                ...state,
+                loading:false,
+                LegalAccess:false
+            }
         case ADD_USER:
             return{
                 ...state,
@@ -49,7 +59,9 @@ const reducer_main_test = (state=initialState,action)=>{
                 test_name:action.data.test_name,
                 user_time:action.data.test_duration,
                 remain:action.data.list.length,
-                answers:df
+                answers:df,
+                start_time:action.data.start_time,
+                LegalAccess:true
             }
         case DECREMENT_REMAIN:
             var drrr = state.remain-1;
@@ -62,21 +74,6 @@ const reducer_main_test = (state=initialState,action)=>{
             return{
                 ...state,
                 remain:drr
-            }
-        case UPDATE_TIME:
-            var up = state.user_time;
-            if(action.what == 'hour'){
-                up.hour=action.how;
-            }
-            if(action.what == 'min'){
-                up.min=action.how;
-            }
-            if(action.what == 'second'){
-                up.second=action.how;
-            }
-            return{
-                ...state,
-                user_time:up
             }
         default:
             return state;

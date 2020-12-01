@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import {  Route, useHistory, HashRouter, BrowserRouter } from 'react-router-dom';
+import {  Route, HashRouter } from 'react-router-dom';
 import Result from './components/Result';
 import HomePage  from './components/HomePage_components/HomePage';
 import {MiddlePage} from './components/middlepage';
@@ -20,8 +20,8 @@ ReactDOM.render(
     <div> 
     <Route path='/middle/:id' exact={true} component={MiddlePage}/>
     <Route path='/' exact={true} component={HomePage}/>
-    <Route path='/sample' exact={true}  component={App}/>
-    <Route path='/submit' component={Result}/>
+    <Route path='/test/:id' exact={true}  component={App}/>
+    <Route path='/submit/:testname/:score' component={Result}/>
     <Route path='/mytests' component={MyTest}/>
     <Route path='/testcode' exact={true} component={MainPart}/>
     <Route path='/giventests' component={GivenTest}/>

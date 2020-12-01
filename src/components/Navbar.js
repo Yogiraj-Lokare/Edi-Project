@@ -1,54 +1,54 @@
-import React, { Component, useState, useEffect } from 'react';
-import { Link,useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { connect, useSelector } from 'react-redux';
-import store from '../redux/store';
 import { updateTime } from '../redux/actions';
+import axios from 'axios';
 
 function Navbar(props){
         const history=useHistory();
-        const endTest=()=>{
-
-            history.push('/submit');
+        const {answers,test_name} = useSelector(state=>state.reducer_main_test);
+        const endTest=async()=>{
+            const fill = {
+                answers,
+                test_name
+            }
+            const {data} = await axios.post('/test/submit',{fill});
+            console.log(data);
+            history.push(`/submit/${test_name}/${data.score}`);
         }
-        /*var timee=0;
+        const {start_time} = useSelector(state=>state.reducer_main_test);
+        const [hour,seth] = useState(0);
+        const [min,setm] = useState(0);
+        const [sec,sets] = useState(0);
+        const [mes,setmd] = useState('');
         window.addEventListener('blur',()=>{
-            timee=props.second;
-            timee+=(props.min*60);
-            timee+=(props.hour*60*60);
+            setmd(`tab changed`);
         });
         window.addEventListener('focus',()=>{
-            var cur=props.second;
-            cur+=(props.min*60);
-            cur+=(props.hour*60*60);
-            if(timee-cur<=5){
-                alert('dont change tab');
-            }
-            else{
-                alert('you were on another tab for more than 5 sec');
-                endTest();
-            }
-        });*/
+            setmd('');
+        });
         useEffect(()=>{
             var inter=setInterval(()=>{
-                if(props.hour == 0 && props.min == 0 && props.second==1){
+                const d = new Date();
+                //console.log(d,dd);
+                //settime(d-dd);
+                const  vv = start_time+(props.hour*3600000)+(props.min*60000)+2000;
+                const dd = new Date(vv);
+                const dfg = d.valueOf();
+                const cv = dd.valueOf();
+                var dcv = (cv-dfg)/1000;
+                var h1=0,m1=0,s1=0;
+                h1 = Math.floor(dcv/3600);
+                m1 = Math.floor((dcv/60)-h1*60);
+                s1 = Math.floor((dcv-h1*3600-m1*60));
+                seth(()=>h1);setm(()=>m1);sets(()=>s1);
+                //console.log(hour,min,sec);
+                if(hour <= -1 ){
                     endTest();
-                }
-                if(props.second==0){
-                    props.updateTime(59,'second');
-                    if(props.min==0){
-                        props.updateTime(props.hour-1,'hour');
-                        props.updateTime(59,'min');
-                    }
-                    else{
-                        props.updateTime(props.min-1,'min');
-                    }
-                }
-                else{
-                    props.updateTime(props.second-1,'second');
                 }
             },1000);
             return()=> clearInterval(inter);
-        },[props.second]);
+        },[sec]);
 
         const total=props.list.length;
         var progress = (100*(props.remain))/total;
@@ -62,7 +62,8 @@ function Navbar(props){
                 <div className='header'>
                    <div className="test-name">{props.test_name}</div>
                     <div className='timer'>
-                    {props.hour<10 ?`0${props.hour}`:props.hour }:{props.min<10 ? `0${props.min}`:props.min}:{props.second<10 ? `0${props.second}`:props.second}
+                    {hour<10 ?`0${hour}`:hour }:{min<10 ? `0${min}`:min}:{sec<10 ? `0${sec}`:sec}
+                    {mes}
                     </div>
                     <div className='remain'>
                         <div className='counter-no' data-toggle="tooltip" title="Remaing Questions" >{props.remain}</div>

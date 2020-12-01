@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Header1 } from '../mainPage';
+import axios from 'axios';
 export function GivenTest(){
-    const data = [
-        {
-            key:1,
-            no:1,
-            test_name:'oneeee',
-            test_start:12,
-            test_end:3,
-            score:56
-        }
-    ]
+    var dd = [{
+        key:1,
+        no:1,
+        test_name:'oneeee',
+        test_start:12,
+        test_end:3,
+        score:56
+    }]
+    const [data1,setdata] = useState(dd);
+    useEffect(()=>{
+        const load=async()=>{
+            const {data} = await axios.get('/test/given');
+            setdata(data);
+        };
+        load();
+    },[]);
     return(
         <React.Fragment>
             <Header1/>
@@ -33,7 +40,7 @@ export function GivenTest(){
                     </thead>
                     <tbody>
                         {
-                            data.map(ts=>{
+                            data1.map(ts=>{
                                 return (
                                     <tr key={ts.key}>
                                     <th scope='row'>{ts.no}</th>

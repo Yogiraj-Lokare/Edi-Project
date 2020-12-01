@@ -6,7 +6,7 @@ const schema = mongoose.Schema({
         required:true,
     },
     test_id:{
-        type:Number
+        type:String
     },
     users:[{
         user_id:{
@@ -22,7 +22,14 @@ const schema = mongoose.Schema({
             type:Number
         },
         test_start_time:{
-            type:String
+            type:Date
+        },
+        user_response:[{
+            type:Number
+        }],
+        is_test_ended:{
+            type:Boolean,
+            default:false
         }
     }]
 });

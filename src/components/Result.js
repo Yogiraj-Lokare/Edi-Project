@@ -1,12 +1,43 @@
-import React, { Component } from 'react';
-import store from '../redux/store';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { CardContent, Typography, makeStyles, Card} from '@material-ui/core';
+import { useParams ,Link} from 'react-router-dom';
+const useStyles = makeStyles({
+    root: {
+      
+      marginTop:'2vw',
+      marginLeft:'25vw',
+      marginRight:'25vw'
+    },
+    pos: {
+      marginBottom: 12,
+      fontSize:25
+    },
+  });
+  
 function Result(){
-    const {answers,user_time} =useSelector(state=>state.reducer_main_test);
+    const classes = useStyles();
+    const param = useParams();
+    console.log(param);
         return(
             <React.Fragment>
-                <div>{answers}</div>
-        <div>{user_time.hour}:{user_time.min}:{user_time.second}</div>
+                <Card className={classes.root} >
+                <CardContent style={{textAlign:'center'}}>
+                    <Typography variant='h3' color='textPrimary'>
+                    Your Score
+                </Typography>
+                <Typography className={classes.pos} color="textSecondary">
+                    in
+                </Typography>
+                <Typography variant="h4" component="h2">
+                    --{param.testname}--   
+                </Typography>
+                 
+                <Typography variant="h2" component="p">
+                 {param.score}
+                </Typography><hr/>
+                <Link to='/' > back to Home </Link>
+            </CardContent>
+            </Card>
             </React.Fragment>
         );
 }

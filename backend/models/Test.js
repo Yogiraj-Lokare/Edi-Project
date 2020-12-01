@@ -72,6 +72,9 @@ const schema = mongoose.Schema({
         }
     }
 
-});
+},{
+    timestamps:true,
+}
+);
 const Test= new mongoose.model("Test",schema);
 module.exports=Test;

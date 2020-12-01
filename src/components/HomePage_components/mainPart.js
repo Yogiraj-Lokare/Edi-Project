@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import { useHistory, Link, BrowserRouter, Switch, Route } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Header1 } from '../mainPage';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import { Button, Grid, Paper, TextField,Typography} from '@material-ui/core';
 export function MainPart(){
     const [ser,setser] = useState('');
     const [message,setmsg] = useState('');
@@ -16,8 +18,7 @@ export function MainPart(){
         var er = document.getElementById('error');
         er.style.display = 'block';  
     }
-    const submitHandler=async(e)=>{
-        e.preventDefault();
+    const submitHandler=async()=>{
         const {data} =await axios.post('/test/search',{test_name:ser});
         console.log(data);
         if(data.error != null){
@@ -31,23 +32,23 @@ export function MainPart(){
         <React.Fragment>
             <Header1/>
         <div className='container'>
-            <div className='card my-5 shadow'>
+            <div className='card my-5 shadow '>
                 <div className='card-body'>
                 <div className='text-center'>
-                        <div className='h4 mb-4'>Search</div>
+                    <Typography variant='h3'> Search</Typography>
                 </div>
                 <div id='error' style={{display:'none'}} className='alert alert-danger alert-dismissible'> <button onClick={()=>clear()} className='close' datadismiss='alert' aria-label='close'>&times;</button><strong>{message}</strong>
                 </div>
-                <form onSubmit={(e)=>submitHandler(e)}>
-                    <div className=' form-group '>
-                    <input type='text' value={ser} onChange={(e)=>setser(e.target.value)} className=' form-control form-control-user ' placeholder='search test' name='test_name'></input>
-                    <hr></hr>
-                    <div className='text-center'>
-                    <input type='submit' className='btn  btn-outline-primary' name='submit'></input>
-                    </div>     
-                    </div>
-                    
-                </form>
+                <Paper elevation={0} style={{marginTop:'1vw'}}>
+                <Grid container spacing={1} direction='row' justify='center' alignItems='center'>
+                    <Grid item  >
+                        <TextField name='test_name' value={ser} onChange={(e)=>setser(e.target.value)} variant='outlined' placeholder='Search...'></TextField>
+                    </Grid>
+                    <Grid item >
+                    <Button style={{backgroundColor:'rgb(77, 89, 255)',color:'white',fontSize:'1.5vw',outline:'none'}} onClick={()=>submitHandler()}  variant='contained' endIcon={<ArrowForwardIcon/>} >Go</Button>
+                    </Grid>
+                </Grid>
+                </Paper>
             </div>
             </div>
         </div>

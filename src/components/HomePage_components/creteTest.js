@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import {Header1} from '../mainPage';
 export  function CreateTest(){
-    const [file,Setfile] = useState(null);
-    const [loaded,setLo] = useState(0);
-    const [loaded1,setLo1] = useState(0);
-    const [file1,Setfile1] = useState(null);
+    const [allowedUsersFile,setallowedUsersFile] = useState(null);
+    const [uploadIndicator1,setuploadIndicator1] = useState(0);
+    const [uploadIndicator2,setuploadIndicator2] = useState(0);
+    const [questionsFile,setquestionsFile] = useState(null);
     const [testName, setTestname] = useState('');
     const [testdh, setTestdh] = useState(0);
     const [testdm, setTestdm] = useState(0);
-    const [message , setmessage] = useState('');
+    const [errorMessage , seterrorMessage] = useState('');
     var ev = 'Open';
     const SetError=(error)=>{
-        setmessage(error);
-        var er = document.getElementById('error');
-        er.style.display = 'block';  
+        seterrorMessage(error);
+        var errorElement = document.getElementById('error');
+        errorElement.style.display = 'block';  
     }
-    const clear=()=>{
-        var er = document.getElementById('error');
-        er.style.display = 'none';
+    const clearError=()=>{
+        var errorElement = document.getElementById('error');
+        errorElement.style.display = 'none';
     }
     const check=()=>{
         const ler = document.getElementById('sel');
@@ -28,23 +28,23 @@ export  function CreateTest(){
         ev == 'Open' ? v2.style.display = 'none':v2.style.display = 'block';
     }
     const handle=(e)=>{
-        setLo(0);
+        setuploadIndicator1(0);
         console.log(e.target.files[0]);
-        Setfile(e.target.files[0]);
+        setallowedUsersFile(e.target.files[0]);
     }
     const handle1=(e)=>{
-        setLo1(0);
+        setuploadIndicator2(0);
         console.log(e.target.files[0]);
-        Setfile1(e.target.files[0]);
+        setquestionsFile(e.target.files[0]);
     }
     const upfile1=async(e)=>{
         e.preventDefault();
-        if(file != null){
+        if(allowedUsersFile != null){
         const data1 = new FormData();
-        data1.append('file', file);
+        data1.append('file', allowedUsersFile);
         const {data} = await axios.post('/test/allowuser',data1,{
             onUploadProgress:ProgressEvent=>{
-                setLo(ProgressEvent.loaded / ProgressEvent.total*100);
+                setuploadIndicator1(ProgressEvent.loaded / ProgressEvent.total*100);
             }
         })
         }
@@ -54,12 +54,12 @@ export  function CreateTest(){
     }
     const upfile=async(e)=>{
         e.preventDefault();
-        if(file1 != null){
+        if(questionsFile != null){
         const data1 = new FormData();
-        data1.append('file',file1);
+        data1.append('file',questionsFile);
         const {data} = await axios.post('/test/testlist',data1,{
             onUploadProgress:ProgressEvent=>{
-                setLo1(ProgressEvent.loaded / ProgressEvent.total*100);
+                setuploadIndicator2(ProgressEvent.loaded / ProgressEvent.total*100);
             }
         })
         }
@@ -100,7 +100,7 @@ export  function CreateTest(){
                     <div className='text-center'>
                         <div className='h4 mb-4'> Create Test</div>
                     </div>
-                <div id='error' style={{display:'none'}} className='alert alert-danger alert-dismissible'> <button onClick={()=>clear()} className='close' datadismiss='alert' aria-label='close'>&times;</button><strong>{message}</strong>
+                <div id='error' style={{display:'none'}} className='alert alert-danger alert-dismissible'> <button onClick={()=>clearError()} className='close' datadismiss='alert' aria-label='close'>&times;</button><strong>{errorMessage}</strong>
                 </div>
                 <form className='user' onSubmit={(e)=>submit(e)}>
                     <div className='form-group '>
@@ -153,8 +153,8 @@ export  function CreateTest(){
                         <input  accept='.xlsx' type='file' onChange={(e)=>handle(e)} className='form-control form-control-user w-25' name='file'></input>
                         <button  onClick={(e)=>upfile1(e)} className='btn btn-info mt-3'>Upload</button>
                         <div className='progress w-25 mt-2 mb-2'>
-                            <div className='progress-bar  progress-bar-striped  progress-bar-animated' role='progressbar' style={{width: `${loaded}%`}} aria-valuenow='55'
-                            aria-valuemin='0' aria-valuemax='100'>{loaded}%</div>
+                            <div className='progress-bar  progress-bar-striped  progress-bar-animated' role='progressbar' style={{width: `${uploadIndicator1}%`}} aria-valuenow='55'
+                            aria-valuemin='0' aria-valuemax='100'>{uploadIndicator1}%</div>
                     </div>
                     </div>
                     </div>
@@ -164,8 +164,8 @@ export  function CreateTest(){
                         <input required={true} type='file' accept='.xlsx' onChange={(e)=>handle1(e)} className='form-control form-control-user w-25' name='file1'></input>
                     </div>
                     <div className='progress w-25 mt-2 mb-2'>
-                            <div className='progress-bar  progress-bar-striped  progress-bar-animated' role='progressbar' style={{width: `${loaded1}%`}} aria-valuenow='55'
-                            aria-valuemin='0' aria-valuemax='100'>{loaded1}%</div>
+                            <div className='progress-bar  progress-bar-striped  progress-bar-animated' role='progressbar' style={{width: `${uploadIndicator2}%`}} aria-valuenow='55'
+                            aria-valuemin='0' aria-valuemax='100'>{uploadIndicator2}%</div>
                     </div>
                     <button onClick={(e)=>upfile(e)} className='btn btn-info mt-3'>Upload_List</button><hr></hr>
                     <input  className='btn  btn-outline-success' type='submit' name='submit'></input>

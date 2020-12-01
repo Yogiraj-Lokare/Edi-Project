@@ -1,13 +1,12 @@
 const express= require("express");
 const auth=require('../middleware/auth');
-const fs = require('fs');
 const app=express.Router();
 const multer = require('multer');
 const cors = require('cors');
 const XLSX = require('xlsx');
 const Test = require('../models/Test');
-const data = require("../data");
 const User = require("../models/User");
+const Score = require("../models/Score");
 app.use(cors());
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -28,42 +27,237 @@ filename: function (req, file, cb) {
 }   
 });
 var upload1 = multer({ storage: storage1 }).single('file');
-
-app.post('/check',auth,async(req,res)=>{
-  try{
-    const na =await Test.find({test_name:req.body.test_name});
-    //console.log(na[0].test_name);
-    if(na.length == 0){
-      return res.json({error:'3'});
+app.post('/results',auth,async(req,res)=>{
+    const userData = await Score.findOne({test_name:req.body.test_name});
+    var response = [];
+    for(var i=0;i<userData.users.length;i++){
+        const user = {
+          key:i+1,
+          username:userData.users[i].user_name,
+          email:userData.users[i].user_email,
+          score:userData.users[i].user_score
+        }
+        response.push(user);
     }
-    const vv = await User.findOne({email:req.user.email});
-    //console.log(vv);
-    var vb=true; 
-    for(var i=0;i<vv.givenTests.length;i++){
-      if(vv.givenTests[i].testName  == na[0].test_name){
-        vb=false;
+    res.json(response);
+});
+
+app.get('/given',auth,async(req,res)=>{
+    const data = await User.findOne({email:req.user.email});
+    const tesc = data.givenTests;
+    //console.log(data,tesc);
+    var namer = [];
+    tesc.map(tes=>{
+      namer.push(tes.testName);
+    });
+    const d2 = await Test.find({test_name:{$in:namer}});
+    //console.log(d2);
+    var final = [];
+    d2.map(test1=>{
+      const st = {
+        test_name:test1.test_name,
+        key:test1._id,
+        test_start:`${test1.start_time.date} @ ${test1.start_time.time}`,
+        test_end:`${test1.end_time.date} @ ${test1.end_time.time}`,
+        score:0,
+        no:1
+      }
+      final.push(st);
+    });
+    for(var i=0;i<final.length;i++){
+      //final[i].score = tesc[i].score;
+      for(var j=0;j<final.length;j++){
+        if(final[i].test_name == tesc[j].testName){
+          final[i].score = tesc[j].score;
+        }
+      }
+      //console.log(tesc[i]);
+      final[i].no = i+1;
+    }
+    //console.log(final);
+    res.json(final);
+});
+
+app.post('/submit',auth,async(req,res)=>{
+  //console.log(req.body.fill);
+  var score = 0;
+  const anser = await Test.find({test_name:req.body.fill.test_name});
+  var ansr = [],marks = [];
+  //console.log(anser[0]);
+  anser[0].list.map(que=>{
+    ansr.push(que.answer);
+    marks.push(que.marks);
+  });
+  for(var i=0;i<anser[0].list.length;i++){
+    if(ansr[i] == req.body.fill.answers[i]){
+      score+=marks[i];
+    }
+  }
+  const scor = await Score.findOne({test_name:req.body.fill.test_name});
+  var copi = scor;
+  copi.users.map(user=>{
+    if(user.user_email == req.user.email){
+      user.user_response = req.body.fill.answers;
+      user.user_score = score;
+      user.is_test_ended = true;
+    }
+  });
+  const ip = await Score.updateOne({test_name:req.body.fill.test_name},{$set:copi});
+  const use = await User.find({email:req.user.email});
+  const rf = use[0].givenTests;
+  const rr = {
+    testName:req.body.fill.test_name,
+    score
+  }
+  rf.push(rr);
+  const dar = {
+    username:use[0].username,
+    email:use[0].email,
+    password:use[0].password,
+    createdTests:use[0].createdTests,
+    givenTests:rf
+  }
+  const dc = await User.updateOne({email:req.user.email},{$set:dar});
+  const resf = {
+    score:score,
+    test_name:req.body.fill.test_name
+  }
+    res.json(resf);
+});
+
+app.post('/delete',auth,async(req,res)=>{
+    const dd = await Test.findByIdAndDelete(req.body._id);
+    const d1d = await Score.findOneAndDelete({test_id:req.body._id});
+    res.json({done:1});
+    
+});
+
+const checking = async(name,email) =>{
+  const na =await Test.find({test_name:name});
+  if(na.length == 0){
+    return 3;
+  }
+  const scc = await Score.findOne({test_name:name});
+  //console.log('cheking-----',scc);
+  //console.log(scc.users[0]);
+  var guilty = false;
+  if(scc.users[0] != undefined){
+  scc.users.map(user=>{
+    if(user.user_email == email){
+      if(user.is_test_ended){
+        guilty = true;
+      }
+    }
+  })
+}
+  if(guilty){
+    return 2;
+  }
+  if(na[0].test_type == 'Closed'){
+    var cb=false;
+    for(var i=0;i<na[0].allowed_users.length;i++){
+      if(na[0].allowed_users[i] == email){
+        cb=true;
         break;
       }
     }
-    if(!vb){
-      return res.json({error:'2'});
+    if(!cb){
+      return 3;
     }
-    if(na[0].test_type == 'Closed'){
-      var cb=false;
-      for(var i=0;i<na[0].allowed_users.length;i++){
-        if(na[0].allowed_users[i] == req.user.email){
-          cb=true;
-          break;
-        }
+  }
+  const test_end= `${na[0].end_time.date} @ ${na[0].end_time.time}`;
+  const cc =new Date();
+  var year = parseInt(test_end.substr(0,4));
+  var mon = parseInt(test_end.substr(5,2));
+  var day = parseInt(test_end.substr(8,2)); 
+  var hour = parseInt(test_end.substr(13,2));
+  var min = parseInt(test_end.substr(16,2));
+  const ds = new Date(year,mon-1,day,hour,min);
+  if(ds < cc){
+    return 5;
+  }
+  return 1;
+};
+
+app.get('/dataaccess/:id',auth,async(req,res)=>{
+  var c = await checking(req.params.id,req.user.email);
+  if(c!=1){
+      return res.json({code:'error here'});
+  }
+  const pastdata = await Score.findOne({test_name:req.params.id});
+  const coptt = pastdata.users;
+  var alloer = false;
+  var isS = false,itsva=1,addornot = true;
+  coptt.map(de=>{
+    if(de.user_email == req.user.email){
+      addornot = false;
+      if(de.test_start_time != null){
+        isS=true;
+        itsva = de.test_start_time;
       }
-      if(!cb){
-        return res.json({error:'3'});
+      if(de.is_test_ended){
+        alloer = true;
       }
     }
-    return res.json(na[0].test_name);
+  });
+  if(alloer){
+    return res.json({code:'error here'});
+  }
+  const data =await Test.find({test_name:req.params.id});
+  var list = data[0].list;
+  var list1 = [];
+  for(var i=0;i<list.length;i++){
+    list[i].answer = 0;
+    list1.push({
+      marks:list[i].marks,
+      mcqs:list[i].mcqs,
+      question:list[i].question,
+      _id:list[i]._id,
+      number:i+1
+    }); 
+  }
+  
+  const ti = new Date();
+  var ttt = ti.valueOf();
+  if(!addornot){
+   var ff = new Date(itsva);
+   ttt = ff.valueOf();
+  }
+  const testuser = {
+    user_name:req.user.username,
+    user_id:req.user._id,
+    user_email:req.user.email,
+    user_score:0,
+    test_start_time:ttt
+  };
+  if(addornot){
+  var su = pastdata.users;
+  su.push(testuser);
+  const up ={
+    test_id:pastdata.test_id,
+    users:su,
+    test_name:pastdata.test_name
+  }
+  const cc = await Score.updateOne({test_name:req.params.id},{$set:up});
+}
+  //console.log(up);
+  const doc = {
+    test_name:data[0].test_name,
+    test_duration:data[0].test_duration,
+    list:list1,
+    start_time:ttt
+  }
+  
+  res.json(doc);
+});
+app.post('/check',auth,async(req,res)=>{
+  try{
+    var c = await checking(req.body.test_name,req.user.email);
+    //console.log(req.body.test_name);
+    return res.send({error:c});
     }
     catch(e){
-      res.json({error:e});
+      res.json({error1:e});
     }
 });
 
@@ -94,6 +288,7 @@ app.get('/mytests',auth,async(req,res)=>{
     try{
       const data1 = await Test.find({test_creator:req.user.email});
       var nam=[];
+      //console.log(data1);
       data1.map(data2=>{
         var emp = {
           test_name:data2.test_name, 
@@ -118,7 +313,7 @@ app.post('/allowuser',auth,(req,res)=>{
         if (err instanceof multer.MulterError) {
             return res.status(500).json(err)
         } else if (err) {
-            console.log('error',err);  
+            //console.log('error',err);  
         } 
         res.status(200).send(req.file);
  });
@@ -203,13 +398,21 @@ app.post('/testdata',auth ,async(req,res)=>{
     end_time:sdstr,
     allowed_users:allowe
   }
-  var rett = new Test(store);
+  
+  const rett = new Test(store);
   //console.log(rett);
   try{
-    rett=await rett.save();
+    const ff = await rett.save();
+    const scv = {
+      test_name:req.body.test_name,
+      test_id:rett._id
+    }
+    var sc = new Score(scv);
+    const fg = await sc.save();
+    //console.log(sc,fg);
   }
   catch(e){
-    console.log(e);
+    //console.log(e);
     return res.send({error:e});
   }
     res.json({success:'done'});
@@ -288,12 +491,22 @@ const store ={
   end_time:sdstr,
   allowed_users:allowe
 }
-
+const scv = await Score.findOne({test_id:req.body.test_id});
+const up ={
+  test_id:scv.test_id,
+  users:scv.users,
+  test_name:req.body.test_name
+}
+//console.log(scv,up);
 //var rett =  Test(store);
 //console.log(rett);
 try{
-  const up = await Test.updateOne({_id:req.body.test_id},{$set:store});
-  //console.log(up);
+  var dfs = req.body.test_id;
+  var idf = dfs.toString();
+  //console.log(up,idf);
+  const up1 = await Test.updateOne({_id:req.body.test_id},{$set:store});
+  const cc = await Score.updateOne({test_id:idf},{$set:up});
+  //console.log(cc);
 }
 catch(e){
   console.log(e);
