@@ -14,6 +14,7 @@ import { CreateTest } from "./components/HomePage_components/creteTest";
 import { EditTest } from "./components/HomePage_components/EditTest";
 import { MyTest } from "./components/HomePage_components/myTest";
 import { ViewTest } from "./components/ViewTest";
+import Video from "./components/Video";
 ReactDOM.render(
   <Provider store={store}>
     <HashRouter>
@@ -29,6 +30,7 @@ ReactDOM.render(
           <Route path="/create" component={CreateTest} />
           <Route path="/edittest" component={EditTest} />
           <Route path="/view/:id" component={ViewTest} />
+          <Route path="/video" component={Video}></Route>
         </div>
       </React.StrictMode>
     </HashRouter>

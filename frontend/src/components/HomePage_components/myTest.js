@@ -17,6 +17,7 @@ export function MyTest() {
       username: "2",
       email: "22",
       score: 1,
+      totalScore: 10,
     },
   ]);
   const [titleData, setTitleData] = useState({
@@ -259,9 +260,36 @@ export function MyTest() {
                           return (
                             <tr key={ts.key}>
                               <th scope="row">{ts.key}</th>
-                              <td>{ts.username}</td>
+                              <td>
+                                {ts.username == undefined ? (
+                                  <div
+                                    style={{ fontSize: "100%" }}
+                                    className="badge badge-warning"
+                                  >
+                                    User Not registerd
+                                  </div>
+                                ) : (
+                                  <div>{ts.username}</div>
+                                )}
+                              </td>
                               <td>{ts.email}</td>
-                              <td>{ts.score}</td>
+                              <td align="right">
+                                {ts.totalScore == 0 ? (
+                                  <div
+                                    style={{ fontSize: "100%" }}
+                                    className="badge badge-danger"
+                                  >
+                                    Not attended
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ fontSize: "100%" }}
+                                    className="badge badge-success"
+                                  >
+                                    {ts.score}/{ts.totalScore}
+                                  </div>
+                                )}
+                              </td>
                             </tr>
                           );
                         })}

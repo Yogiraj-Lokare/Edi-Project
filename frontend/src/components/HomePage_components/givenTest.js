@@ -25,6 +25,7 @@ export function GivenTest() {
       test_start: 12,
       test_end: 3,
       score: 56,
+      totalScore: 102,
     },
   ];
   const temp_data = [
@@ -175,7 +176,9 @@ export function GivenTest() {
                           <Typography>{row.test_end}</Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography>{row.score}</Typography>
+                          <Typography>
+                            {row.score}/{row.totalScore}
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     ))}

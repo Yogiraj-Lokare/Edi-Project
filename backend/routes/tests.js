@@ -4,6 +4,7 @@ const app = express.Router();
 const multer = require("multer");
 const cors = require("cors");
 const XLSX = require("xlsx");
+const _ = require("lodash");
 const Test = require("../models/Test");
 const User = require("../models/User");
 const Score = require("../models/Score");
@@ -64,6 +65,10 @@ app.post("/results", auth, async (req, res) => {
   if (testData.test_creator != req.user.email) {
     return res.json({ invalid: true });
   }
+  var totalScore = 0;
+  for (var i = 0; i < testData.list.length; i++) {
+    totalScore += testData.list[i].marks;
+  }
   const userData = await Score.findOne({ test_name: req.body.test_name });
   var response = [];
   for (var i = 0; i < userData.users.length; i++) {
@@ -72,9 +77,43 @@ app.post("/results", auth, async (req, res) => {
       username: userData.users[i].user_name,
       email: userData.users[i].user_email,
       score: userData.users[i].user_score,
+      totalScore: totalScore,
     };
     response.push(user);
   }
+  if (testData.test_type == "Closed") {
+    var usersData = await User.find();
+    for (var i = 0; i < testData.allowed_users.length; i++) {
+      if (_.findIndex(response, { email: testData.allowed_users[i] }) == -1) {
+        var userName = _.result(
+          _.find(usersData, {
+            email: testData.allowed_users[i],
+          }),
+          "username"
+        );
+        const user = {
+          key: 1,
+          username: userName,
+          email: testData.allowed_users[i],
+          score: 0,
+          totalScore: 0,
+        };
+        response.push(user);
+      }
+    }
+  }
+  response = _.sortBy(
+    response,
+    (e) => {
+      return 1 / e.score;
+    },
+    "username"
+  );
+  var i = 1;
+  response.map((res) => {
+    res.key = i;
+    i++;
+  });
   res.json(response);
 });
 app.get("/future", auth, async (req, res) => {
@@ -150,12 +189,17 @@ app.get("/given", auth, async (req, res) => {
   //console.log(d2);
   var final = [];
   d2.map((test1) => {
+    var totalScore = 0;
+    test1.list.map((testt) => {
+      totalScore += testt.marks;
+    });
     const st = {
       test_name: test1.test_name,
       key: test1._id,
       test_start: `${test1.start_time.date} @ ${test1.start_time.time}`,
       test_end: `${test1.end_time.date} @ ${test1.end_time.time}`,
       score: 0,
+      totalScore: totalScore,
       no: 1,
     };
     final.push(st);
@@ -394,7 +438,6 @@ app.post("/search", auth, async (req, res) => {
 app.post("/onetest", auth, async (req, res) => {
   try {
     const data = await Test.findOne({ _id: req.body.test_id });
-    //console.log(data,req.body.test_id);
     return res.json(data);
   } catch (e) {
     res.json(e);
@@ -404,7 +447,6 @@ app.get("/mytests", auth, async (req, res) => {
   try {
     const data1 = await Test.find({ test_creator: req.user.email });
     var nam = [];
-    //console.log(data1);
     data1.map((data2) => {
       var emp = {
         test_name: data2.test_name,
@@ -414,10 +456,7 @@ app.get("/mytests", auth, async (req, res) => {
       };
       nam.push(emp);
     });
-    const fin = {
-      data: nam,
-    };
-    return res.status(200).json(fin);
+    return res.status(200).json({ data: nam });
   } catch (e) {
     return res.json(e);
   }

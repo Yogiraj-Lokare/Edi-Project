@@ -30,12 +30,10 @@ export function CreateTest() {
   };
   const handle = (e) => {
     setuploadIndicator1(0);
-    console.log(e.target.files[0]);
     setallowedUsersFile(e.target.files[0]);
   };
   const handle1 = (e) => {
     setuploadIndicator2(0);
-    console.log(e.target.files[0]);
     setquestionsFile(e.target.files[0]);
   };
   const upfile1 = async (e) => {
